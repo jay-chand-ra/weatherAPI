@@ -6,10 +6,13 @@ import LocationSelector from './components/LocationSelector';
 import WeatherDisplay from './components/WeatherDisplay';
 import ErrorBoundary from './components/ErrorBoundary';
 import { motion } from 'framer-motion';
+import AlertSystem from './components/AlertSystem';
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [weatherData, setWeatherData] = useState(null);
+  const [alerts, setAlerts] = useState([]);
 
   const theme = createTheme({
     palette: {
@@ -21,6 +24,14 @@ function App() {
     return darkMode
       ? 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)'
       : 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)';
+  };
+
+  const handleWeatherUpdate = (data) => {
+    setWeatherData(data);
+  };
+
+  const handleAlertChange = (newAlerts) => {
+    setAlerts(newAlerts);
   };
 
   return (
@@ -71,7 +82,19 @@ function App() {
           >
             <LocationSelector onLocationSelect={setSelectedLocation} darkMode={darkMode} />
             <ErrorBoundary>
-              {selectedLocation && <WeatherDisplay location={selectedLocation} darkMode={darkMode} />}
+              {selectedLocation && (
+                <>
+                  <WeatherDisplay 
+                    location={selectedLocation} 
+                    darkMode={darkMode} 
+                    onWeatherUpdate={handleWeatherUpdate} 
+                  />
+                  <AlertSystem 
+                    weatherData={weatherData} 
+                    onAlertChange={handleAlertChange} 
+                  />
+                </>
+              )}
             </ErrorBoundary>
           </Paper>
         </Container>
