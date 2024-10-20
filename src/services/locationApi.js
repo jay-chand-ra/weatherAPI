@@ -72,3 +72,25 @@ export const getUniqueRegions = (countries) => {
   // You may want to create your own list of regions or remove this functionality
   return [];
 };
+
+export const fetchWeatherData = async (city, country) => {
+  const apiKey = process.env.REACT_APP_OPENWEATHERMAP_API_KEY;
+
+  try {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${apiKey}`);
+    
+    if (response.status === 401) {
+      throw new Error("Invalid API key. Please check your OpenWeatherMap API key.");
+    }
+    
+    if (!response.ok) {
+      throw new Error("Failed to fetch current weather data");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching current weather data:", error);
+    throw error;
+  }
+};

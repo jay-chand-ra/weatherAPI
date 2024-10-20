@@ -1,76 +1,81 @@
 import React, { useState } from 'react';
-import { HashRouter as Router } from 'react-router-dom';
-import { Container, Box, ThemeProvider, createTheme, CssBaseline, IconButton, AppBar, Toolbar, Typography } from '@mui/material';
-import { teal, amber, blue } from '@mui/material/colors';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { Container, Typography, Box, Paper, Switch, FormControlLabel, AppBar, Toolbar } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import LocationSelector from './components/LocationSelector';
 import WeatherDisplay from './components/WeatherDisplay';
+import ErrorBoundary from './components/ErrorBoundary';
+import { motion } from 'framer-motion';
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
 
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
-      primary: darkMode ? teal : blue,
-      secondary: amber,
-      background: {
-        default: darkMode ? '#121212' : '#f0f8ff',
-        paper: darkMode ? '#1e1e1e' : 'rgba(255, 255, 255, 0.8)',
-      },
-    },
-    typography: {
-      fontFamily: '"Poppins", "Roboto", "Arial", sans-serif',
-    },
-    components: {
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            backdropFilter: 'blur(10px)',
-          },
-        },
-      },
     },
   });
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
-
-  const handleLocationSelect = (location) => {
-    setSelectedLocation(location);
+  const getBackgroundGradient = () => {
+    return darkMode
+      ? 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)'
+      : 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)';
   };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Box sx={{ 
-          minHeight: '100vh', 
-          background: darkMode 
-            ? 'linear-gradient(135deg, #1c1c1c 0%, #2c3e50 100%)'
-            : 'linear-gradient(135deg, #e0f7fa 0%, #4fc3f7 100%)',
-          backgroundSize: 'cover',
-          backgroundAttachment: 'fixed',
-        }}>
-          <AppBar position="static" color="transparent" elevation={0}>
-            <Toolbar>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                Weather Monitoring System
-              </Typography>
-              <IconButton onClick={toggleDarkMode} color="inherit">
-                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <Container maxWidth="lg" sx={{ mt: 4 }}>
-            <LocationSelector onLocationSelect={handleLocationSelect} />
-            {selectedLocation && <WeatherDisplay location={selectedLocation} />}
-          </Container>
-        </Box>
-      </Router>
+      <Box
+        component={motion.div}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        sx={{
+          minHeight: '100vh',
+          background: getBackgroundGradient(),
+          transition: 'background 0.3s ease-in-out',
+        }}
+      >
+        <AppBar position="static" color="transparent" elevation={0}>
+          <Toolbar>
+            <Typography variant="h4" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+              Weather Monitoring System
+            </Typography>
+            <FormControlLabel
+              control={
+                <Switch 
+                  checked={darkMode} 
+                  onChange={() => setDarkMode(!darkMode)} 
+                  color="primary"
+                />
+              }
+              label={darkMode ? "Dark Mode" : "Light Mode"}
+            />
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+          <Paper
+            component={motion.div}
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            elevation={3}
+            sx={{ 
+              padding: '20px', 
+              backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+              transition: 'background-color 0.3s ease-in-out',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '15px',
+            }}
+          >
+            <LocationSelector onLocationSelect={setSelectedLocation} darkMode={darkMode} />
+            <ErrorBoundary>
+              {selectedLocation && <WeatherDisplay location={selectedLocation} darkMode={darkMode} />}
+            </ErrorBoundary>
+          </Paper>
+        </Container>
+      </Box>
     </ThemeProvider>
   );
 }
