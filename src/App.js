@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import { Container, Box, ThemeProvider, createTheme, CssBaseline, IconButton, AppBar, Toolbar, Typography } from '@mui/material';
 import { teal, amber, blue } from '@mui/material/colors';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
